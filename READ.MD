@@ -17,5 +17,5 @@ This tool checks random 3–5 character Discord usernames and notifies you via a
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/discord-username-checker.git
-cd discord-username-checker
+git clone https://github.com/Zenxoxz/PomeSniper.git
+cd PomeSniper

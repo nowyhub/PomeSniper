@@ -1,5 +1,7 @@
 # Discord Username Checker 🕵️‍♂️
 
+**Need help or want to connect with others? [Join the Discord server](https://discord.gg/zZ7p8Pbw).**
+
 This tool checks random 3–5 character Discord usernames and notifies you via a Discord webhook when an available username is found.
 
 ## ⚙️ Features
@@ -18,4 +20,4 @@ This tool checks random 3–5 character Discord usernames and notifies you via a
 
 ```bash
 git clone https://github.com/Zenxoxz/PomeSniper.git
-cd PomeSniper
+cd PomeSniper 

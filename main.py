@@ -4,7 +4,7 @@ import random
 import time
 
 BASE_URL = "https://discord.com/api/v9/users/@me/pomelo-attempt"
-WEBHOOK_URL = "ENTER WEBHOOK HERE"
+WEBHOOK_URL = "PASTE_WEBHOOK_HERE"
 
 
 def validate_token(token):
@@ -59,7 +59,10 @@ def generate_base_username():
             chars[i] = leet_map[chars[i]]
             leet_applied = True
 
-    return ''.join(chars)
+    final = ''.join(chars)
+
+    # Trim the final username to 3 or 4 characters
+    return final[:random.choice([3, 4])]
 
 
 def check_username(token, username):

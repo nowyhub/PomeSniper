@@ -2,7 +2,7 @@
 
 **Need help or want to connect with others? [Join the server](https://discord.gg/zZ7p8Pbw).**
 
-This tool checks random 3–5 character usernames and notifies you via a webhook when an available name is found.
+This tool checks random 3–4 character usernames and notifies you via a webhook when an available name is found.
 
 ## ⚙️ Features
 

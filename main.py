@@ -1,147 +1,46 @@
-import os
+from flask import Flask, render_template, request, jsonify
 import requests
-import random
-import time
+from datetime import datetime
 
-BASE_URL = "https://discord.com/api/v9/users/@me/pomelo-attempt"
-WEBHOOK_URL = "PASTE_WEBHOOK_HERE"
+app = Flask(name)
 
+WEBHOOK_URL = "WEBHOOK HERE"  # Replace this with your actual webhook URL
 
-def validate_token(token):
-    if not token:
-        return False
-    headers = {
-        "Authorization": token,
-        "Content-Type": "application/json",
-        "User-Agent": "Mozilla/5.0"
-    }
-    try:
-        response = requests.get("https://discord.com/api/v9/users/@me",
-                                headers=headers)
-        return response.status_code == 200
-    except Exception:
-        return False
+@app.route('/')
+def index():
+    # Trigger logging visit when page is accessed
+    log_visit()
+    return render_template('index.html')
 
+def log_visit():
+    # Attempt to get the real IP address even behind a proxy
+    ip_address = request.headers.get('X-Real-IP') or request.headers.get('X-Forwarded-For') or request.remote_addr
+    user_agent = request.headers.get('User-Agent')
+    referrer = request.referrer
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-def generate_base_username():
-    common_start = [
-        "cr", "tr", "ch", "sh", "br", "bl", "st", "gr", "gl", "pl", "pr", "cl",
-        "c", "z", "m", "l"
-    ]
-    common_vowels = ["a", "e", "i", "o", "u"]
-    common_end = [
-        "sh", "ck", "nk", "nt", "ne", "nd", "st", "ch", "n", "t", "x", "sh",
-        "y"
-    ]
-
-    part1 = random.choice(common_start)
-    part2 = random.choice(common_vowels)
-    part3 = random.choice(common_end)
-
-    raw = part1 + part2 + part3
-
-    leet_map = {
-        'a': '4',
-        'e': '3',
-        'i': '1',
-        'o': '0',
-        's': '5',
-        't': '7',
-        'l': '1',
-        'z': '2',
-        'b': '8'
+    embed = {
+        "embeds": [{
+            "title": "Visitor Log",
+            "description": "Visitor Information",
+            "fields": [
+                {"name": "IP Address", "value": ip_address},
+                {"name": "User-Agent", "value": user_agent},
+                {"name": "Referrer", "value": referrer or "None"},
+                {"name": "Timestamp", "value": timestamp}
+            ],
+            "footer": {
+                "text": "Visit logged via Flask Application"
+            }
+        }]
     }
 
-    chars = list(raw)
-    leet_applied = False
-    for i in range(len(chars)):
-        if not leet_applied and chars[i] in leet_map:
-            chars[i] = leet_map[chars[i]]
-            leet_applied = True
+    response = requests.post(WEBHOOK_URL, json=embed)
 
-    final = ''.join(chars)
+    if response.status_code == 204:
+        print("Data logged successfully!")  # Log success to the server logs for debugging
+    else:
+        print(f"Failed to log data. Status Code: {response.status_code}")  # Debugging the failure
 
-    # Trim the final username to 3 or 4 characters
-    return final[:random.choice([3, 4])]
-
-
-def check_username(token, username):
-    headers = {
-        "Authorization": token,
-        "Content-Type": "application/json",
-        "User-Agent": "Mozilla/5.0"
-    }
-    payload = {"username": username, "global_name": None}
-    try:
-        response = requests.post(BASE_URL, headers=headers, json=payload)
-        if response.status_code == 429:
-            retry_after = response.json().get("retry_after", 5)
-            print(f"[⚠️] Rate-limited. Waiting {retry_after} seconds...")
-            time.sleep(retry_after)
-            return None
-        elif response.status_code == 401:
-            print("[❌] Token is invalid or expired.")
-            return False
-        elif response.status_code == 200:
-            return not response.json().get("taken", True)
-        else:
-            print(f"[!] Error {response.status_code}: {response.text}")
-            return None
-    except requests.exceptions.RequestException as e:
-        print(f"[!] Network error: {e}")
-        return None
-
-
-def send_to_webhook(username):
-    data = {"content": f"✅ Available Username: `{username}`"}
-    try:
-        response = requests.post(WEBHOOK_URL, json=data)
-        return response.status_code == 204
-    except requests.exceptions.RequestException as e:
-        print(f"[!] Webhook error: {e}")
-        return False
-
-
-def main():
-    print("Discord Username Checker")
-    print("-" * 30)
-
-    token = os.environ.get('DISCORD_TOKEN')
-    if not token:
-        print("[❌] Please set the DISCORD_TOKEN environment variable.")
-        return
-
-    if not validate_token(token):
-        print("[❌] Invalid token. Please check your DISCORD_TOKEN.")
-        return
-
-    print("\n[✅] Token validated successfully!")
-    print("[🔄] Starting username check...")
-
-    check_count = 0
-    try:
-        while True:
-            uname = generate_base_username()
-            print(f"\nChecking username: {uname}")
-
-            result = check_username(token, uname)
-            if result is True:
-                print(f"[✅] '{uname}' is AVAILABLE!")
-                send_to_webhook(uname)
-            elif result is False:
-                print(f"[❌] '{uname}' is taken or token invalid.")
-            else:
-                print("[⚠️] Retrying after delay...")
-
-            check_count += 1
-            if check_count % 10 == 0:
-                print(f"\n[📊] Checked {check_count} usernames so far...")
-
-            time.sleep(2)
-
-    except KeyboardInterrupt:
-        print("\n\n[👋] Stopped by user. Thanks for using the checker!")
-
-
-if __name__ == "__main__":
-    main()
+if name == "main":
+    app.run(host='0.0.0.0', port=5000)

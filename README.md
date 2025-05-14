@@ -1,6 +1,6 @@
 # Discord Username Checker 🕵️‍♂️
 
-**Need help or want to connect with others? [Join the server](https://discord.gg/zZ7p8Pbw).**
+**Need help or want to connect with others? [Join the server](https://discord.gg/gMmYcQKGHm).**
 
 This tool checks random 3–4 character usernames and notifies you via a webhook when an available name is found.
 

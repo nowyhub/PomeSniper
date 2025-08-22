@@ -21,5 +21,5 @@ This tool checks random 3–4 character usernames and notifies you via a webhook
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/Zenxoxz/PomeSniper.git
+git clone https://github.com/nowyhub/PomeSniper.git
 cd PomeSniper
